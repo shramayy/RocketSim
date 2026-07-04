@@ -12,3 +12,8 @@ This program exists because I love rockets, and I want to share that fascination
 
 For now it's going to fly under the effects of gravity and atmospheric pressure. Also the fuel consumption is kept in check. As time goes on I will study more about rockets and try to integrate those things here to make this as realistic as possible. 
 
+## Order of things done
+
+1. Added a timer to make the launching cool.
+
+
