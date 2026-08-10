@@ -17,10 +17,12 @@ For now it's going to fly under the effects of gravity and atmospheric pressure.
 1. Added a timer to make the launching cool.
 2. Rocket simulated under the effect of gravity and external thrust. 
 3. Added an explanation when mass/thrust ratio is wrong.
+4. Added existing rocket specifications and an option to choose your own parameters for the rocket using class.
+
 
 
 ## Issues faced
 
-1. Not enough thrust in comparison to rocket mass kept printing the velocity and altitude to be negative
-2. The rocket instantly loses fuel before any movement.
+1. Not enough thrust in comparison to rocket mass kept printing the velocity and altitude to be negative. (resolved)
+2. The rocket instantly loses fuel before any movement. (resolved)
 
