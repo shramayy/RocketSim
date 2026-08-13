@@ -3,12 +3,12 @@
 
 import math
 import time
-from Rockets import falcon, starship
+from Rockets import falcon, starship, saturn
 
 print ("Choose the rocket that will be taking flight today. Your options are:")
 print ("1. Falcon 9")
 print ("2. Starship")
-print ("3. pass")
+print ("3. Saturn 5")
 print ("4. pass")
 print ("5. Custom")
 choice = input("Enter the serial number of the rocket you'd like to test:")
@@ -17,6 +17,9 @@ if choice == "1" :
     
 elif choice == "2" :
     rocket = starship
+
+elif choice == "3" :
+    rocket = saturn
 
 elif choice == "5" :
     name = input ("Enter a name for your rocket: ")
@@ -81,6 +84,7 @@ while liftoff:
            f"Remaining fuel: {rocket.fuelmass} " 
     )
     t += dt
+    time.sleep(0.1)
 
     
     
