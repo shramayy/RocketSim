@@ -1,9 +1,15 @@
 # First adding a timer for rocket launch
 # Simulate flight under gravity and external thrust by engine
+# Adding pre built rockets to watch perfect flight.
+# Adding velocity-time and altitude-time graphs.
+# Adding drag with constant density and C
 
-import math
+import matplotlib.pyplot as plt
+import pygame
 import time
 from Rockets import falcon, starship, saturn
+
+pygame.init()
 
 print ("Choose the rocket that will be taking flight today. Your options are:")
 print ("1. Falcon 9")
@@ -35,8 +41,14 @@ print (f"You have chosen {rocket.name}. Flight will begin shortly.")
 t = 0.1
 h = 0
 g = 9.806
+rho = 1.225
+Cd = 0.3
 dt = 0.1 
 v =  0
+time_data = []
+altitude_data = []
+velocity_data = []
+
 minthrust = (rocket.fuelmass + rocket.bodymass)*g
 ltime = 4
 if rocket.thrust > (rocket.fuelmass+rocket.bodymass)*g:
@@ -60,31 +72,46 @@ for x in reversed(range(1, ltime)):
 #Then follows 2 different paths, where liftoff is achieved and not. 
 
 if liftoff:
-    print ("Liftoff, adios!")
+    rocket.liftoff()
 else:
-    print ("Whoops, there it goes..... right into the water. Try again next time.")
+    rocket.crash()
 
 while liftoff:
+    thrust = rocket.thrust
     rocket.fuelmass = max(0, rocket.fuelmass - rocket.fuelrate*dt)
     totalmass = rocket.bodymass + rocket.fuelmass
+    drag = 0.5 *rho*Cd*rocket.area*(v**2)
     if rocket.fuelmass <=0:
         thrust = 0
 
-    Fnet = rocket.thrust - totalmass*g
+    Fnet = thrust - totalmass*g - drag
     a = Fnet/totalmass
     v += a*dt
     h += v*dt 
     
-    if h <= 0:
+    if v <= 0:
         break
 
     print (f"Time: {t:.1f} | "
            f"Velocity: {v:.1f} | "
+           f"Drag: {drag:.1f} | "
+           f"Net Force: {Fnet:.1f} | "
            f"Altitude: {h:.1f} | "
            f"Remaining fuel: {rocket.fuelmass} " 
     )
     t += dt
-    time.sleep(0.1)
+
+    time_data.append(t)
+    altitude_data.append(h)
+    velocity_data.append(v)
+
+plt.plot(time_data, velocity_data)
+plt.xlabel("Time (s)")
+plt.ylabel("Velocity (m/s)")
+plt.title(f"{rocket.name} : Velocity vs Time")
+
+plt.show()
+
 
     
     
@@ -92,4 +119,6 @@ if not liftoff:
     time.sleep(1)
     print ("You selected an improper mass/thrust ratio. The net force on rocket is 'Fnet = thrust - mg'. If thrust is less than mg, then the it will not fly as "
     f"there is no acceleration in upward direction. Try changing the thrust to a value higher than {minthrust:.1f} if you intend to keep the same mass.")
-    
+
+
+

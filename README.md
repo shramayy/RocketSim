@@ -18,7 +18,8 @@ For now it's going to fly under the effects of gravity and atmospheric pressure.
 2. Rocket simulated under the effect of gravity and external thrust. 
 3. Added an explanation when mass/thrust ratio is wrong.
 4. Added existing rocket specifications and an option to choose your own parameters for the rocket using class.
-
+4. Added velocity-time and altitude-time graphs.
+5. Added drag with constant air density and drag coefficient (C<sub>D</sub>)
 
 
 ## Issues faced
