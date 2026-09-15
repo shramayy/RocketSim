@@ -1,5 +1,4 @@
-# All units are SI (kg/s, kg, kg, N, m²)
-
+# All units are SI (kg/s, kg, kg, N, m²)  
 class Rockets:
     def __init__ (self, name, fuelrate, fuelmass, bodymass, thrust, area):
         self.name = name

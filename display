@@ -1,0 +1,31 @@
+import pygame
+from sys import exit
+
+pygame.init()
+screen = pygame.display.set_mode((1280, 720))
+pygame.display.set_caption('Rocket Simulator')
+clock = pygame.time.Clock()
+
+background = pygame.image.load('Sprites/background.png').convert_alpha()
+background = pygame.transform.scale(background, (1280, 720))
+rocket = pygame.image.load('Sprites/rocket.png').convert_alpha()
+rocket = pygame.transform.scale(rocket, (100, 100))
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+
+    screen.blit(background, (0, 0))
+    screen.blit(rocket, (580,550))
+    
+
+    pygame.display.update()
+    clock.tick(60)
+
+    
+
+
+
+
+s

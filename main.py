@@ -2,14 +2,14 @@
 # Simulate flight under gravity and external thrust by engine
 # Adding pre built rockets to watch perfect flight.
 # Adding velocity-time and altitude-time graphs.
-# Adding drag with constant density and C
+# Adding drag with variable density and gravity, and constant C
 
 import matplotlib.pyplot as plt
-import pygame
+import math
 import time
+import random 
 from Rockets import falcon, starship, saturn
 
-pygame.init()
 
 print ("Choose the rocket that will be taking flight today. Your options are:")
 print ("1. Falcon 9")
@@ -36,26 +36,33 @@ elif choice == "5" :
 
 else:
     print("That is an invalid choice.")
+time.sleep(1)
 
-print (f"You have chosen {rocket.name}. Flight will begin shortly.")
 t = 0.1
 h = 0
-g = 9.806
-rho = 1.225
-Cd = 0.3
+g0 = 9.806
+rho0 = 1.225
+radius = 6371000
+c = 0.3
 dt = 0.1 
 v =  0
+wind_v = random.randint(0, 30)
 time_data = []
 altitude_data = []
 velocity_data = []
+drag_data = []
 
-minthrust = (rocket.fuelmass + rocket.bodymass)*g
+minthrust = (rocket.fuelmass + rocket.bodymass)*g0
 ltime = 4
-if rocket.thrust > (rocket.fuelmass+rocket.bodymass)*g:
+if rocket.thrust > (rocket.fuelmass+rocket.bodymass)*g0:
     liftoff = True
 else: 
     liftoff = False
-
+    
+print (f"You have chosen {rocket.name}. Flight will begin shortly.")
+time.sleep(1)
+print (f"Winds blowing at {wind_v} m/s.")
+time.sleep(1)
 print ("All systers online")
 time.sleep(1)
 print ("Initiating launch sequence")
@@ -80,16 +87,18 @@ while liftoff:
     thrust = rocket.thrust
     rocket.fuelmass = max(0, rocket.fuelmass - rocket.fuelrate*dt)
     totalmass = rocket.bodymass + rocket.fuelmass
-    drag = 0.5 *rho*Cd*rocket.area*(v**2)
+    rho = rho0*math.exp(-h/8500)
+    drag = 0.5 *rho*c*rocket.area*(v**2)
+    g = g0*(radius / (radius + h))**2
     if rocket.fuelmass <=0:
         thrust = 0
 
     Fnet = thrust - totalmass*g - drag
     a = Fnet/totalmass
-    v += a*dt
+    v = math.sqrt((v + a*dt)**2 + wind_v**2)
     h += v*dt 
     
-    if v <= 0:
+    if rocket.fuelmass <= 0:
         break
 
     print (f"Time: {t:.1f} | "
@@ -104,6 +113,7 @@ while liftoff:
     time_data.append(t)
     altitude_data.append(h)
     velocity_data.append(v)
+    drag_data.append(drag)
 
 plt.plot(time_data, velocity_data)
 plt.xlabel("Time (s)")
@@ -119,6 +129,7 @@ if not liftoff:
     time.sleep(1)
     print ("You selected an improper mass/thrust ratio. The net force on rocket is 'Fnet = thrust - mg'. If thrust is less than mg, then the it will not fly as "
     f"there is no acceleration in upward direction. Try changing the thrust to a value higher than {minthrust:.1f} if you intend to keep the same mass.")
+
 
 
 
