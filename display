@@ -6,10 +6,23 @@ screen = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption('Rocket Simulator')
 clock = pygame.time.Clock()
 
-background = pygame.image.load('Sprites/background.png').convert_alpha()
-background = pygame.transform.scale(background, (1280, 720))
-rocket = pygame.image.load('Sprites/rocket.png').convert_alpha()
-rocket = pygame.transform.scale(rocket, (100, 100))
+background_earth = pygame.image.load('Sprites/background.png').convert()
+background_earth = pygame.transform.scale(background_earth, (1280, 720))
+background_space = pygame.image.load('Sprites/space.png').convert()
+background_space = pygame.transform.scale(background_space, (1280, 720))
+rocket_static = pygame.image.load('Sprites/rocketstat.png').convert_alpha()
+rocket_static = pygame.transform.scale(rocket_static, (85, 110))
+rocket_x = 592.5
+rocket_y = 540
+rocket_flight = pygame.image.load('Sprites/rocket.png').convert_alpha()
+rocket_flight = pygame.transform.scale(rocket_flight, (85, 110))
+rocket_diag = pygame.image.load('Sprites/diagfly.png').convert_alpha()
+rocket_diag = pygame.transform.scale(rocket_diag, (85, 110))
+background = background_earth
+rocket = rocket_static
+rocket_flying = False
+rocket_diagfly = False
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -17,7 +30,30 @@ while True:
             exit()
 
     screen.blit(background, (0, 0))
-    screen.blit(rocket, (580,550))
+    screen.blit(rocket, (rocket_x, rocket_y))
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_SPACE]:
+        rocket_flying = True
+        rocket = rocket_flight 
+
+    if rocket_flying:
+        rocket_y -= 2
+
+
+    if rocket_y <= -100:
+        background = background_space
+        rocket_y = 720
+        rocket_diagfly = True
+        rocket = rocket_diag
+
+    if rocket_diagfly:
+        rocket_x += 0.5
+
+    if rocket_x >= 1300:
+        rocket_x = 0
+
+    
     
 
     pygame.display.update()
@@ -28,4 +64,3 @@ while True:
 
 
 
-s

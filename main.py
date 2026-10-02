@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import math
 import time
 import random 
-from Rockets import falcon, starship, saturn
+from Rockets import falcon, stage1, stage2
 
 
 print ("Choose the rocket that will be taking flight today. Your options are:")
@@ -22,10 +22,10 @@ if choice == "1" :
     rocket = falcon
     
 elif choice == "2" :
-    rocket = starship
+    rocket = falcon
 
 elif choice == "3" :
-    rocket = saturn
+    rocket = falcon
 
 elif choice == "5" :
     name = input ("Enter a name for your rocket: ")
@@ -44,21 +44,15 @@ g0 = 9.806
 rho0 = 1.225
 radius = 6371000
 c = 0.3
-dt = 0.1 
+dt = 1 
 v =  0
 wind_v = random.randint(0, 30)
 time_data = []
 altitude_data = []
 velocity_data = []
 drag_data = []
+liftoff = True
 
-minthrust = (rocket.fuelmass + rocket.bodymass)*g0
-ltime = 4
-if rocket.thrust > (rocket.fuelmass+rocket.bodymass)*g0:
-    liftoff = True
-else: 
-    liftoff = False
-    
 print (f"You have chosen {rocket.name}. Flight will begin shortly.")
 time.sleep(1)
 print (f"Winds blowing at {wind_v} m/s.")
@@ -73,7 +67,7 @@ time.sleep(1)
 print ("The rocket will launch in T-minus ")
 time.sleep(1)
 
-for x in reversed(range(1, ltime)):
+for x in reversed(range(1, 4)):
     print (f"{x}")
     time.sleep(1)
 #Then follows 2 different paths, where liftoff is achieved and not. 
@@ -84,35 +78,44 @@ else:
     rocket.crash()
 
 while liftoff:
-    thrust = rocket.thrust
-    rocket.fuelmass = max(0, rocket.fuelmass - rocket.fuelrate*dt)
-    totalmass = rocket.bodymass + rocket.fuelmass
+    stage = rocket.stages[rocket.current_stage]
+    thrust = stage.thrust
+    stage.fuelmass = max(0, stage.fuelmass - stage.fuelrate*dt)
+    totalmass = rocket.mass + sum(s.fuelmass for s in rocket.stages)
     rho = rho0*math.exp(-h/8500)
-    drag = 0.5 *rho*c*rocket.area*(v**2)
+    drag = 0.5 *rho*c*rocket.area*(v**2 + wind_v**2)
     g = g0*(radius / (radius + h))**2
-    if rocket.fuelmass <=0:
-        thrust = 0
 
     Fnet = thrust - totalmass*g - drag
     a = Fnet/totalmass
-    v = math.sqrt((v + a*dt)**2 + wind_v**2)
+    v += a*dt
     h += v*dt 
     
-    if rocket.fuelmass <= 0:
+    if stage.fuelmass <= 0:
+        print ("Stage 1 has no remaining fuel.")
+        rocket.mass -= stage1.bodymass
+        if len(rocket.stages) - 1 > rocket.current_stage:
+            rocket.current_stage += 1
+            print("Stage", rocket.current_stage + 1, "active")
+
+    if t >= 200:
         break
+
+
+
 
     print (f"Time: {t:.1f} | "
            f"Velocity: {v:.1f} | "
-           f"Drag: {drag:.1f} | "
+           f"Total Mass: {totalmass:.1f} | "
            f"Net Force: {Fnet:.1f} | "
-           f"Altitude: {h:.1f} | "
-           f"Remaining fuel: {rocket.fuelmass} " 
+           f"Thrust: {thrust:.1f} | "
+           f"Remaining fuel: {stage.fuelmass} " 
     )
     t += dt
 
     time_data.append(t)
     altitude_data.append(h)
-    velocity_data.append(v)
+    velocity_data.append(Fnet)
     drag_data.append(drag)
 
 plt.plot(time_data, velocity_data)
@@ -124,7 +127,8 @@ plt.show()
 
 
     
-    
+minthrust = (stage.fuelmass + stage.bodymass)*g0
+
 if not liftoff:
     time.sleep(1)
     print ("You selected an improper mass/thrust ratio. The net force on rocket is 'Fnet = thrust - mg'. If thrust is less than mg, then the it will not fly as "

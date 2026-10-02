@@ -1,12 +1,22 @@
 # All units are SI (kg/s, kg, kg, N, m²)  
-class Rockets:
-    def __init__ (self, name, fuelrate, fuelmass, bodymass, thrust, area):
-        self.name = name
+
+class Stages:
+    def __init__ (self, fuelrate, fuelmass, bodymass, thrust):
         self.fuelrate = fuelrate
         self.fuelmass = fuelmass
         self.bodymass = bodymass
         self.thrust = thrust 
+
+stage1 = Stages(2600, 418000, 27200, 7600000)
+stage2 = Stages(280, 112000, 4500, 981000)
+class Rockets:
+    def __init__ (self, name, area, mass):
+        self.name = name 
         self.area = area
+        self.mass = mass
+        self.stages = [stage1, stage2]
+        self.current_stage = 0
+
 
     def crash(self):
         print(f"{self.name} has crashed because:")
@@ -17,6 +27,6 @@ class Rockets:
     def nofuel(self):
         print(f"{self.name} has used up all its fuel reserves.")
 
-falcon = Rockets("Falcon 9", 2960, 507500, 60000, 7600000, 10.5)
-starship = Rockets("Starship", 21450, 4900000, 360000, 74400000, 63.6)
-saturn = Rockets("Saturn 5", 15000, 2077000, 137000, 34500000, 80.1)
+        
+
+falcon = Rockets("Falcon 9", 10.5, 31700)
