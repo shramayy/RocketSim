@@ -1,20 +1,23 @@
 # All units are SI (kg/s, kg, kg, N, m²)  
 
 class Stages:
-    def __init__ (self, fuelrate, fuelmass, bodymass, thrust):
+    def __init__ (self, name, fuelrate, fuelmass, bodymass, thrust):
+        self.name = name
         self.fuelrate = fuelrate
         self.fuelmass = fuelmass
         self.bodymass = bodymass
         self.thrust = thrust 
 
-stage1 = Stages(2600, 418000, 27200, 7600000)
-stage2 = Stages(280, 112000, 4500, 981000)
+fstage1 = Stages("Stage 1", 2600, 418000, 27200, 7600000)
+fstage2 = Stages("Stage 2", 280, 112000, 4500, 981000)
+ststage1 = Stages("Stage 1", 22800, 3650000, 300000, 80900000)
+ststage2 = Stages("Stage 2", 4000, 1600000, 110000, 15450000)
 class Rockets:
-    def __init__ (self, name, area, mass):
+    def __init__ (self, name, area, stages, mass):
         self.name = name 
         self.area = area
         self.mass = mass
-        self.stages = [stage1, stage2]
+        self.stages = stages
         self.current_stage = 0
 
 
@@ -29,4 +32,6 @@ class Rockets:
 
         
 
-falcon = Rockets("Falcon 9", 10.5, 31700)
+falcon = Rockets("Falcon 9", 10.5, [fstage1, fstage2], 31700)
+starship = Rockets("Starship", 63.6, [ststage1, ststage2], 410000)
+# saturn = Rockets("Saturn V", 80.1, )

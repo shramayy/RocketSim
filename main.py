@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import math
 import time
 import random 
-from Rockets import falcon, stage1, stage2
+from Rockets import falcon, starship
 
 
 print ("Choose the rocket that will be taking flight today. Your options are:")
@@ -22,7 +22,7 @@ if choice == "1" :
     rocket = falcon
     
 elif choice == "2" :
-    rocket = falcon
+    rocket = starship
 
 elif choice == "3" :
     rocket = falcon
@@ -38,20 +38,31 @@ else:
     print("That is an invalid choice.")
 time.sleep(1)
 
+# Defining Variables
+
 t = 0.1
+x = 0
 h = 0
+h_max = h
 g0 = 9.806
 rho0 = 1.225
 radius = 6371000
 c = 0.3
 dt = 1 
-v =  0
-wind_v = random.randint(0, 30)
+v_y =  0
+v_x = 0
+theta = math.radians(90)
+turn_rate = math.radians(0.5)
+wind_v = random.randint(-30, 30)
 time_data = []
 altitude_data = []
-velocity_data = []
+xvelocity_data = []
+yvelocity_data = []
+nvelocity_data = []
 drag_data = []
+range_data = []
 liftoff = True
+burnout = False
 
 print (f"You have chosen {rocket.name}. Flight will begin shortly.")
 time.sleep(1)
@@ -70,58 +81,94 @@ time.sleep(1)
 for x in reversed(range(1, 4)):
     print (f"{x}")
     time.sleep(1)
-#Then follows 2 different paths, where liftoff is achieved and not. 
+# Then follows 2 different paths, where liftoff is achieved and not. 
 
 if liftoff:
     rocket.liftoff()
 else:
     rocket.crash()
 
-while liftoff:
+while liftoff and t<565 :
     stage = rocket.stages[rocket.current_stage]
-    thrust = stage.thrust
+    if stage.fuelmass >0:
+        thrust = stage.thrust
+
+    else:
+        thrust = 0
+
     stage.fuelmass = max(0, stage.fuelmass - stage.fuelrate*dt)
     totalmass = rocket.mass + sum(s.fuelmass for s in rocket.stages)
     rho = rho0*math.exp(-h/8500)
-    drag = 0.5 *rho*c*rocket.area*(v**2 + wind_v**2)
+    drag_y = 0.5 *rho*c*rocket.area*(v_y**2)
+    drag_x = 0.5*rho*c*rocket.area*((v_x - wind_v)*abs(v_x - wind_v))
     g = g0*(radius / (radius + h))**2
 
-    Fnet = thrust - totalmass*g - drag
-    a = Fnet/totalmass
-    v += a*dt
-    h += v*dt 
+    Fnet_y = thrust*math.sin(theta) - totalmass*g - drag_y
+    Fnet_x = thrust*math.cos(theta) - drag_x
+    a_y = Fnet_y/totalmass
+    a_x = Fnet_x/totalmass
+    v_y += a_y*dt
+    v_x += a_x*dt
+    h += v_y*dt
+    h_max = max(h, h_max)
+    x += v_x*dt 
+    v_net = math.sqrt(v_x**2 + v_y**2)
+
+  # Not realistic. Only for testing purposes.
     
-    if stage.fuelmass <= 0:
-        print ("Stage 1 has no remaining fuel.")
-        rocket.mass -= stage1.bodymass
-        if len(rocket.stages) - 1 > rocket.current_stage:
-            rocket.current_stage += 1
-            print("Stage", rocket.current_stage + 1, "active")
-
-    if t >= 200:
-        break
-
-
-
+    if h > 1500 and theta > math.radians(30):
+        theta = max(math.radians(30), theta - turn_rate * dt)
+        
+    
 
     print (f"Time: {t:.1f} | "
-           f"Velocity: {v:.1f} | "
+           f"Velocity Y: {v_y:.1f} m/s | "
+           f"Velocity X: {v_x:.1f} m/s | "
            f"Total Mass: {totalmass:.1f} | "
-           f"Net Force: {Fnet:.1f} | "
+           f"Theta: {math.degrees(theta):.1f} | "
            f"Thrust: {thrust:.1f} | "
+           f"Altitude: {h:.1f} | "
+           f"Range: {x:.1f} | "
            f"Remaining fuel: {stage.fuelmass} " 
     )
     t += dt
+# Stage Separation
+    if stage.fuelmass <= 0:
+            if len(rocket.stages) - 1 > rocket.current_stage:
+                print (f"Stage {rocket.current_stage + 1} has no remaining fuel.")
+                rocket.mass -= stage.bodymass
+                rocket.current_stage += 1
+                print("Stage", rocket.current_stage + 1, "active")
+
+            else: 
+                if not burnout:
+                    print("Final stage has run out of fuel")
+                    burnout = True
+
+                totalmass = stage.bodymass
+
+                
 
     time_data.append(t)
     altitude_data.append(h)
-    velocity_data.append(Fnet)
-    drag_data.append(drag)
+    xvelocity_data.append(v_x)
+    yvelocity_data.append(v_y)
+    nvelocity_data.append(v_net)
 
-plt.plot(time_data, velocity_data)
-plt.xlabel("Time (s)")
-plt.ylabel("Velocity (m/s)")
-plt.title(f"{rocket.name} : Velocity vs Time")
+    drag_data.append(drag_y)
+    range_data.append(x)
+
+
+# Graphs
+
+ #   plt.plot(time_data, xvelocity_data, label="Horizontal Velocity")
+ #   plt.plot(time_data, yvelocity_data, label="Vertical Velocity")
+ #   plt.plot(time_data, nvelocity_data, label="Net Velocity")
+plt.plot(time_data, altitude_data)
+# plt.legend()
+plt.xlabel("Time")
+plt.ylabel("Altitude")
+plt.title(f"{rocket.name} : Altitude vs Time")
 
 plt.show()
 
