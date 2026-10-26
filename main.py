@@ -8,15 +8,13 @@ import matplotlib.pyplot as plt
 import math
 import time
 import random 
-from Rockets import falcon, starship
+from Rockets import falcon, starship, saturn
 
 
 print ("Choose the rocket that will be taking flight today. Your options are:")
 print ("1. Falcon 9")
 print ("2. Starship")
-print ("3. Saturn 5")
-print ("4. pass")
-print ("5. Custom")
+print ("3. Saturn V")
 choice = input("Enter the serial number of the rocket you'd like to test:")
 if choice == "1" :
     rocket = falcon
@@ -25,17 +23,11 @@ elif choice == "2" :
     rocket = starship
 
 elif choice == "3" :
-    rocket = falcon
-
-elif choice == "5" :
-    name = input ("Enter a name for your rocket: ")
-    fuelrate = float(input("Enter the rate of fuel ejection in kg/s: "))
-    fuelmass = float(input("Enter mass of fuel in rocket in kg: "))
-    bodymass = float(input("Enter mass of rocket body in kg: "))
-    thrust = float(input("Enter thrust from rocket engine: "))
+    rocket = saturn
 
 else:
     print("That is an invalid choice.")
+    choice = input("Enter the serial number of the rocket you'd like to test:")
 time.sleep(1)
 
 # Defining Variables
@@ -88,18 +80,18 @@ if liftoff:
 else:
     rocket.crash()
 
-while liftoff and t<565 :
+while liftoff and t<1000 :
     stage = rocket.stages[rocket.current_stage]
     if stage.fuelmass >0:
         thrust = stage.thrust
+        stage.fuelmass = max(0, stage.fuelmass - stage.fuelrate*dt)
 
     else:
         thrust = 0
 
-    stage.fuelmass = max(0, stage.fuelmass - stage.fuelrate*dt)
     totalmass = rocket.mass + sum(s.fuelmass for s in rocket.stages)
     rho = rho0*math.exp(-h/8500)
-    drag_y = 0.5 *rho*c*rocket.area*(v_y**2)
+    drag_y = 0.5 *rho*c*rocket.area*abs(v_y)*v_y
     drag_x = 0.5*rho*c*rocket.area*((v_x - wind_v)*abs(v_x - wind_v))
     g = g0*(radius / (radius + h))**2
 
@@ -125,12 +117,13 @@ while liftoff and t<565 :
            f"Velocity Y: {v_y:.1f} m/s | "
            f"Velocity X: {v_x:.1f} m/s | "
            f"Total Mass: {totalmass:.1f} | "
-           f"Theta: {math.degrees(theta):.1f} | "
+           f"Force Y: {Fnet_y:.1f} | "
            f"Thrust: {thrust:.1f} | "
            f"Altitude: {h:.1f} | "
            f"Range: {x:.1f} | "
            f"Remaining fuel: {stage.fuelmass} " 
     )
+
     t += dt
 # Stage Separation
     if stage.fuelmass <= 0:
@@ -162,24 +155,25 @@ while liftoff and t<565 :
 # Graphs
 
  #   plt.plot(time_data, xvelocity_data, label="Horizontal Velocity")
- #   plt.plot(time_data, yvelocity_data, label="Vertical Velocity")
+plt.plot(time_data, yvelocity_data, label="Vertical Velocity")
  #   plt.plot(time_data, nvelocity_data, label="Net Velocity")
-plt.plot(time_data, altitude_data)
+# plt.plot(time_data, altitude_data, label = "Altitude")
 # plt.legend()
 plt.xlabel("Time")
-plt.ylabel("Altitude")
-plt.title(f"{rocket.name} : Altitude vs Time")
+plt.ylabel("Vertical velocity")
+plt.title(f"{rocket.name} : Velocity vs Time")
 
 plt.show()
 
 
     
 minthrust = (stage.fuelmass + stage.bodymass)*g0
-
-if not liftoff:
-    time.sleep(1)
-    print ("You selected an improper mass/thrust ratio. The net force on rocket is 'Fnet = thrust - mg'. If thrust is less than mg, then the it will not fly as "
-    f"there is no acceleration in upward direction. Try changing the thrust to a value higher than {minthrust:.1f} if you intend to keep the same mass.")
+# if thrust < minthrust:
+#     liftoff = False
+# if not liftoff:
+#     time.sleep(1)
+#     print ("You selected an improper mass/thrust ratio. The net force on rocket is 'Fnet = thrust - mg'. If thrust is less than mg, then the it will not fly as "
+#     f"there is no acceleration in upward direction. Try changing the thrust to a value higher than {minthrust:.1f} if you intend to keep the same mass.")
 
 
 

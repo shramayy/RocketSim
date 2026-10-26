@@ -2,29 +2,42 @@
 
 ## What is it?
 
-It's a program where you launch rockets, of course. It follows the actual physics of a real rocket taking flight into space. But beware, you make a mistake and that rocket's going to come crashing down! But worry not, for the program also tells you where you went wrong. Keep trying till you get that perfect flight! 
+It began as an attempt at a simulator to teach others how rockets achieve liftoff and make it to space. However, keeping the simulative essence intact, it will now serve as a generator of data for a model to predict max altitude and many other labels knowing which is essential because of their importance in flight planning. 
 
 ## Why is it?
 
-This program exists because I love rockets, and I want to share that fascination with the rest of the world. You can learn the physics behind how rockets move from launch to leaving the atmosphere (maybe even further in the future).
+This program exists because I love rockets, and I want to share that fascination with the rest of the world. I made this to satiate my curiosity and to catch a glance of what space exploration begins with.
 
 ## Main functions
 
-For now it's going to fly under the effects of gravity and atmospheric pressure. Also the fuel consumption is kept in check. As time goes on I will study more about rockets and try to integrate those things here to make this as realistic as possible. 
+Simulates flights under the effect of gravity, atmospheric drag, wind and atmosphere. A model is to be created which will use data from simulated flights with changing parameters to find out values like max altitude, max velocity, time of flight, etc. 
 
 ## Order of things done
 
-1. Added a timer to make the launching cool.
+1. Added launch timer.
 2. Rocket simulated under the effect of gravity and external thrust. 
-3. Added an explanation when mass/thrust ratio is wrong.
-4. Added existing rocket specifications and an option to choose your own parameters for the rocket using class.
+3. Added existing rocket specifications.
 4. Added velocity-time and altitude-time graphs.
-5. Added drag with constant air density and drag coefficient (C<sub>D</sub>)
-6. Added a display with a rocket and background.2
+5. Added drag with drag coefficient (C<sub>D</sub>) and variable air density 
+6. Added a display with a rocket and background.
+7. Fixed bugs and added staging.
 
 
 ## Issues faced
 
 1. Not enough thrust in comparison to rocket mass kept printing the velocity and altitude to be negative. (resolved)
 2. The rocket instantly loses fuel before any movement. (resolved)
+3. Staging. The entireity of it.
+4. Unusual velocity and altitude peaks. 
 
+
+
+## Disclaimer
+
+This simulator is an educational project, not a validated aerospace engineering tool. Its predictions depend on the assumptions and approximations used in the physics model.
+
+Atmospheric modeling, aerodynamic effects, guidance, propulsion, staging, and orbital dynamics may be simplified or incomplete. Simulated results should not be interpreted as validated predictions of real launch vehicles.
+
+
+
+##                                             IN DEVELOPMENT
