@@ -1,38 +1,34 @@
-# First adding a timer for rocket launch
-# Simulate flight under gravity and external thrust by engine
-# Adding pre built rockets to watch perfect flight.
-# Adding velocity-time and altitude-time graphs.
-# Adding drag with variable density and gravity, and constant C
-
 import matplotlib.pyplot as plt
 import math
 import time
 import random 
 from Rockets import falcon, starship, saturn
 
-
-print ("Choose the rocket that will be taking flight today. Your options are:")
+print ("Choose the rocket that will be taking flight today:")
 print ("1. Falcon 9")
 print ("2. Starship")
 print ("3. Saturn V")
-choice = input("Enter the serial number of the rocket you'd like to test:")
-if choice == "1" :
-    rocket = falcon
-    
-elif choice == "2" :
-    rocket = starship
-
-elif choice == "3" :
-    rocket = saturn
-
-else:
-    print("That is an invalid choice.")
+while True:
     choice = input("Enter the serial number of the rocket you'd like to test:")
-time.sleep(1)
+    if choice == "1" :
+        rocket = falcon
+        break
+        
+    elif choice == "2" :
+        rocket = starship
+        break
+
+    elif choice == "3" :
+        rocket = saturn
+        break
+
+    else:
+        print("That is an invalid choice.")
+
 
 # Defining Variables
 
-t = 0.1
+t = 0
 x = 0
 h = 0
 h_max = h
@@ -41,11 +37,11 @@ rho0 = 1.225
 radius = 6371000
 c = 0.3
 dt = 1 
-v_y =  0
+v_y = 0
 v_x = 0
+wind_v = random.randint(-30, 30)
 theta = math.radians(90)
 turn_rate = math.radians(0.5)
-wind_v = random.randint(-30, 30)
 time_data = []
 altitude_data = []
 xvelocity_data = []
@@ -55,6 +51,8 @@ drag_data = []
 range_data = []
 liftoff = True
 burnout = False
+
+time.sleep(1)
 
 print (f"You have chosen {rocket.name}. Flight will begin shortly.")
 time.sleep(1)
@@ -80,7 +78,7 @@ if liftoff:
 else:
     rocket.crash()
 
-while liftoff and t<1000 :
+while liftoff and t<600:
     stage = rocket.stages[rocket.current_stage]
     if stage.fuelmass >0:
         thrust = stage.thrust
@@ -106,7 +104,7 @@ while liftoff and t<1000 :
     x += v_x*dt 
     v_net = math.sqrt(v_x**2 + v_y**2)
 
-  # Not realistic. Only for testing purposes.
+# Not realistic. Only for testing purposes.
     
     if h > 1500 and theta > math.radians(30):
         theta = max(math.radians(30), theta - turn_rate * dt)
@@ -114,14 +112,14 @@ while liftoff and t<1000 :
     
 
     print (f"Time: {t:.1f} | "
-           f"Velocity Y: {v_y:.1f} m/s | "
-           f"Velocity X: {v_x:.1f} m/s | "
-           f"Total Mass: {totalmass:.1f} | "
-           f"Force Y: {Fnet_y:.1f} | "
-           f"Thrust: {thrust:.1f} | "
-           f"Altitude: {h:.1f} | "
-           f"Range: {x:.1f} | "
-           f"Remaining fuel: {stage.fuelmass} " 
+        f"Velocity Y: {v_y:.1f} m/s | "
+        f"Velocity X: {v_x:.1f} m/s | "
+        f"Total Mass: {totalmass:.1f} | "
+        f"Force Y: {Fnet_y:.1f} | "
+        f"Thrust: {thrust:.1f} | "
+        f"Altitude: {h:.1f} | "
+        f"Range: {x:.1f} | "
+        f"Remaining fuel: {stage.fuelmass:.1f} " 
     )
 
     t += dt
@@ -138,36 +136,30 @@ while liftoff and t<1000 :
                     print("Final stage has run out of fuel")
                     burnout = True
 
-                totalmass = stage.bodymass
-
                 
 
+            
+
     time_data.append(t)
-    altitude_data.append(h)
+    altitude_data.append(h/1000)
     xvelocity_data.append(v_x)
     yvelocity_data.append(v_y)
     nvelocity_data.append(v_net)
-
     drag_data.append(drag_y)
     range_data.append(x)
 
 
 # Graphs
 
- #   plt.plot(time_data, xvelocity_data, label="Horizontal Velocity")
-plt.plot(time_data, yvelocity_data, label="Vertical Velocity")
- #   plt.plot(time_data, nvelocity_data, label="Net Velocity")
-# plt.plot(time_data, altitude_data, label = "Altitude")
-# plt.legend()
+plt.plot(time_data, yvelocity_data, label="Altitude")
 plt.xlabel("Time")
-plt.ylabel("Vertical velocity")
-plt.title(f"{rocket.name} : Velocity vs Time")
-
+plt.ylabel("Altitude (km)")
+plt.title(f"{rocket.name}: Altitude vs Time")
 plt.show()
 
 
     
-minthrust = (stage.fuelmass + stage.bodymass)*g0
+# minthrust = (stage.fuelmass + stage.bodymass)*g0
 # if thrust < minthrust:
 #     liftoff = False
 # if not liftoff:

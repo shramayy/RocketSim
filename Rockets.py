@@ -15,6 +15,7 @@ ststage2 = Stages("Stage 2", 4000, 1600000, 110000, 15450000)
 sstage1 = Stages("Stage 1", 13500, 2160000, 131500, 33360000)
 sstage2 = Stages("Stage 2", 1314, 473000, 38400, 5004000)
 sstage3 = Stages("Stage 3", 238, 107000, 15200, 1023000) 
+
 class Rockets:
     def __init__ (self, name, area, stages, mass):
         self.name = name 
